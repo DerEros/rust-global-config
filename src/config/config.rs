@@ -30,3 +30,10 @@ fn load_config(name: &str, version: i32) -> Configuration {
         app_version: version
     }
 }
+
+pub fn get_config() -> Configuration {
+    CONFIG.lock()
+        .map(|config_ref|
+            (*config_ref).borrow().clone()
+        ).expect("Configuration missing completely!")
+}
