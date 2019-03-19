@@ -1,6 +1,4 @@
-use std::sync::Mutex;
-use std::cell::RefCell;
-use std::ops::Deref;
+use std::sync::RwLock;
 
 #[derive(Debug, Clone)]
 pub struct Configuration {
@@ -9,8 +7,8 @@ pub struct Configuration {
 }
 
 lazy_static! {
-    pub static ref CONFIG: Mutex<RefCell<Configuration>> = {
-        Mutex::new(RefCell::new(get_default_config()))
+    pub static ref CONFIG: RwLock<Configuration> = {
+        RwLock::new(get_default_config())
     };
 }
 
@@ -22,7 +20,7 @@ fn get_default_config() -> Configuration {
 }
 
 pub fn load_config_file() {
-    CONFIG.lock().unwrap().replace(load_config("App name from file", 2));
+    *CONFIG.write().unwrap() = load_config("App name from file", 2);
 }
 
 fn load_config(name: &str, version: i32) -> Configuration {
@@ -33,17 +31,16 @@ fn load_config(name: &str, version: i32) -> Configuration {
 }
 
 pub fn get_config() -> Configuration {
-    CONFIG.lock()
+    CONFIG.read()
         .map(|config_ref|
-            (*config_ref).borrow().clone()
+            (*config_ref).clone()
         ).expect("Configuration missing completely!")
 }
 
 pub fn with_config<F, R>(func: F) -> R
     where F: FnOnce(&Configuration) -> R {
-    let lock = CONFIG.lock().unwrap();  // panic if locking is not possible
-    let ref_cell: &RefCell<Configuration> = lock.deref();
-    let config: &Configuration = &ref_cell.borrow();
+    let lock = CONFIG.read().unwrap();  // panic if locking is not possible
+    let config: &Configuration = &lock;
 
     func(config)
 }
