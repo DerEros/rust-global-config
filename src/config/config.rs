@@ -39,8 +39,8 @@ pub fn get_config() -> Configuration {
 
 pub fn with_config<F, R>(func: F) -> R
     where F: FnOnce(&Configuration) -> R {
-    let lock = CONFIG.read().unwrap();  // panic if locking is not possible
-    let config: &Configuration = &lock;
+
+    let config: &Configuration = &CONFIG.read().unwrap(); // panic if config cannot be locked for read
 
     func(config)
 }
