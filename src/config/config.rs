@@ -20,6 +20,10 @@ fn get_default_config() -> Configuration {
     }
 }
 
+pub fn load_config_file() {
+    CONFIG.lock().unwrap().replace(load_config("App name from file", 2));
+}
+
 fn load_config(name: &str, version: i32) -> Configuration {
     Configuration {
         app_name: String::from(name),
