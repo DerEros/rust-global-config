@@ -1,5 +1,6 @@
 use std::sync::Mutex;
 use std::cell::RefCell;
+use std::ops::Deref;
 
 #[derive(Debug, Clone)]
 pub struct Configuration {
@@ -36,4 +37,13 @@ pub fn get_config() -> Configuration {
         .map(|config_ref|
             (*config_ref).borrow().clone()
         ).expect("Configuration missing completely!")
+}
+
+pub fn with_config<F, R>(func: F) -> R
+    where F: FnOnce(&Configuration) -> R {
+    let lock = CONFIG.lock().unwrap();  // panic if locking is not possible
+    let ref_cell: &RefCell<Configuration> = lock.deref();
+    let config: &Configuration = &ref_cell.borrow();
+
+    func(config)
 }

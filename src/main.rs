@@ -16,4 +16,19 @@ fn main() {
     println!("-------------------------------");
     println!("App Name: {}", config2.app_name);
     println!("App Version: {}", config2.app_version);
+
+    let res = with_config(|config3| {
+        println!("-------------------------------");
+        println!("App Name: {}", config3.app_name);
+        println!("App Version: {}", config3.app_version);
+
+        with_config(|config4| {
+            println!("-------------------------------");
+            println!("App Name: {}", config4.app_name);
+            println!("App Version: {}", config4.app_version);
+            "res"
+        })
+    });
+
+    println!("My result: {}", res);
 }
