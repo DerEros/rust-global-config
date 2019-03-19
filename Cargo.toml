@@ -5,3 +5,4 @@ authors = ["Eros Candelaresi <eros@candelaresi.de>"]
 edition = "2018"
 
 [dependencies]
+lazy_static = "1.3.0"
